@@ -1,0 +1,6 @@
+# Ignore the large CDC dataset
+*.csv
+
+# Ignore python cache files
+__pycache__/
+.ipynb_checkpoints/
