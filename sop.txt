@@ -1,0 +1,101 @@
+AI Healthcare Assistant — Standard Operating Procedure (SOP)
+
+1. Project Purpose
+- Provide a lightweight Streamlit web application that produces probability-based risk estimates for Heart Disease, Diabetes, and High Cholesterol using pre-trained XGBoost models. The app is intended for demonstration and research use only, not as medical advice.
+
+2. Repository Contents
+- app.py: Streamlit front-end and prediction logic.
+- Cholesterol_Prediction.ipynb, diabetes_check.ipynb, diabetes1.ipynb, Heart_Disease.ipynb: notebooks for data cleaning, feature engineering, model training, and evaluation.
+- diabetes.csv, diabetes1.csv: datasets used for training/experiments.
+- diabetes_model.json, chol_model.json, heart_model.json: saved XGBoost model artifacts (JSON format).
+- scaler.pkl: saved StandardScaler used to standardize features before inference.
+- README.md: project overview and basic run instructions.
+
+3. Environment & Dependencies
+- Recommended: Python 3.10+ (3.11 tested).
+- Recommended package versions for reproducibility: scikit-learn==1.7.2, xgboost, streamlit, pandas, numpy, matplotlib, seaborn.
+- Setup steps:
+  1. Create a virtual environment: `python -m venv .venv`
+  2. Activate env (Windows): `.venv\Scripts\activate` or (macOS/Linux): `source .venv/bin/activate`
+  3. Install dependencies: `pip install streamlit pandas numpy scikit-learn==1.7.2 xgboost matplotlib seaborn`
+  4. (Optional) Create `requirements.txt` with pinned versions for deployment.
+
+Technologies, Libraries & Frameworks
+- Language: Python (recommended 3.10+; 3.11 tested)
+- Web UI framework: Streamlit
+- Machine learning libraries: XGBoost, scikit-learn (StandardScaler, metrics)
+- Data processing: pandas, numpy
+- Visualization: matplotlib, seaborn
+- Model persistence / serialization: XGBoost JSON model format, Python `pickle` for scaler
+- Notebook environment: Jupyter / JupyterLab
+- Optional / runtime tools: Uvicorn (may appear in Streamlit runtime), Docker (for containerization)
+- Development tools: Git, virtualenv/venv, pip, VS Code (recommended)
+
+Recommended package installation (copy/paste):
+```bash
+python -m venv .venv
+.venv\Scripts\activate   # Windows
+# or: source .venv/bin/activate   # macOS/Linux
+pip install --upgrade pip
+pip install streamlit pandas numpy scikit-learn==1.7.2 xgboost matplotlib seaborn jupyter
+```
+
+Create a reproducible `requirements.txt` after installation:
+```bash
+pip freeze > requirements.txt
+```
+
+Notes about versions and compatibility:
+- The provided `scaler.pkl` was saved with scikit-learn 1.7.2; unpickling with different versions (e.g., 1.8.x) will emit warnings and may be unsafe. Best practice: pin scikit-learn to the version used for serialization or re-fit and re-save the scaler with your environment.
+- XGBoost model files are saved in JSON format (`*.json`) and loaded with the XGBoost Python API.
+
+4. Preparation and Verification
+- Ensure model files (`diabetes_model.json`, `heart_model.json`, `chol_model.json`) and `scaler.pkl` are present in repository root.
+- Confirm the `scaler.pkl` was created with the same scikit-learn version you plan to use; if different, re-create the scaler with your environment to avoid unpickle warnings.
+
+5. How to Run Locally
+- From the project root with the virtualenv active:
+  streamlit run app.py
+- Open the provided Local URL (default: http://localhost:8501).
+
+6. App Behavior and Inputs
+- The UI collects a compact set of health indicators (age group index, BMI, high blood pressure, high cholesterol, cholesterol check, smoking, stroke history, physical activity, fruit consumption, gender, and placeholder/default features to match the model input shape).
+- `app.py` constructs a 17-feature vector, applies `scaler.transform(...)`, and calls `predict_proba` on the three XGBoost models.
+- Output: probability percentages for each condition, simple risk-level messaging, and basic lifestyle recommendations.
+
+7. Notebooks and Reproducibility
+- `diabetes_check.ipynb` and `Cholesterol_Prediction.ipynb` include data preprocessing steps (drop columns, handle BMI outliers, scaling), model training, and evaluation metrics (accuracy, recall, F1-score).
+- To reproduce training: run the appropriate notebook cells in order, verify dataset paths, and re-save model artifacts and scaler using your environment versions.
+
+8. Evaluation & Metrics
+- Notebooks compute accuracy, recall for positive class (Class 1), and F1-score. Use cross-validation or hold-out test sets for robust evaluation. Track model fairness and class imbalance.
+
+9. Known Issues & Recommendations
+- scikit-learn pickle compatibility: `scaler.pkl` was originally saved with scikit-learn 1.7.2. Using different sklearn versions (e.g., 1.8.x) may emit InconsistentVersionWarning; to remove the warning, re-fit and re-save the scaler with your active sklearn version.
+- Validate feature ordering: ensure the order of features passed from `app.py` exactly matches the training order used to build the models.
+- User-facing language: some notebooks contain Sinhala-language outputs; code comments were translated to English, but printed messages and markdown may still be in Sinhala — translate if sharing publicly.
+
+10. Data Privacy & Ethics
+- Confirm datasets include only data you have rights to use. For any public release or clinical integration, obtain necessary ethics approvals and ensure compliance with local data protection regulations (e.g., HIPAA, GDPR as applicable).
+- Include a clear disclaimer in the UI and documentation: "Not medical advice; for demonstration only."
+
+11. Deployment Suggestions
+- Quick demo: deploy to Streamlit Community Cloud or a VM/container with port 8501 exposed.
+- Containerization: create a `Dockerfile` that installs dependencies, copies model files, and runs `streamlit run app.py`.
+- CI/CD: add a smoke test that installs dependencies, checks model files load without error, and hits the app health endpoint.
+
+12. Maintenance
+- Store training code and data versioning in the repo.
+- Retrain models periodically with fresh data, re-run evaluation metrics, and re-check fairness/robustness.
+- Keep a changelog for model updates and dataset changes.
+
+13. Contact & Collaboration
+- For validation, clinical collaboration, or data partnerships, provide contact info in `README.md` and outline expected legal/ethical requirements.
+
+14. Quick Checklist (Before Sharing)
+- [ ] Confirm `scaler.pkl` matches sklearn version or re-save it.
+- [ ] Translate user-facing strings if publishing externally.
+- [ ] Add explicit medical disclaimer in `app.py` UI and `README.md`.
+- [ ] Pin repository metadata and instructions in `README.md` (run, requirements, contact).
+
+End of SOP
